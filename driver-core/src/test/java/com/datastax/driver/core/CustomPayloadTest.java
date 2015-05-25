@@ -101,11 +101,7 @@ public class CustomPayloadTest extends CCMBridge.PerClassSingleNodeCluster {
 
     // prepare
 
-    /**
-     * TODO enable after JAVA-776
-     * @throws Exception
-     */
-    @Test(groups = "short", enabled = false)
+    @Test(groups = "short")
     public void should_echo_custom_payload_when_preparing_statement() throws Exception {
         PreparedStatement ps = session.prepareWithPayload(new SimpleStatement("SELECT c2 FROM t1 where c1 = ?"), customPayload);
         assertCustomPayload(((CustomPayloadAwarePreparedStatement)ps).getCustomPayload());
@@ -113,11 +109,7 @@ public class CustomPayloadTest extends CCMBridge.PerClassSingleNodeCluster {
         assertCustomPayload(rows.getExecutionInfo().getCustomPayload());
     }
 
-    /**
-     * TODO enable after JAVA-776
-     * @throws Exception
-     */
-    @Test(groups = "short", enabled = false)
+    @Test(groups = "short")
     public void should_echo_custom_payload_when_preparing_statement_async() throws Exception {
         PreparedStatement ps = session.prepareAsyncWithPayload(new SimpleStatement("SELECT c2 FROM t1 where c1 = ?"), customPayload).get();
         assertCustomPayload(((CustomPayloadAwarePreparedStatement)ps).getCustomPayload());
