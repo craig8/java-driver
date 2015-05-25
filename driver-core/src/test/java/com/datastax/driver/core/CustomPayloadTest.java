@@ -17,7 +17,6 @@ package com.datastax.driver.core;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import com.google.common.collect.ImmutableMap;
 import org.testng.annotations.Test;
@@ -32,6 +31,20 @@ public class CustomPayloadTest extends CCMBridge.PerClassSingleNodeCluster {
             "k1", new byte[]{ 1, 2, 3 },
             "k2", new byte[]{ 4, 5, 6 }
         ));
+
+
+    // payload set at statement level
+
+    @Test(groups = "short")
+    public void should_echo_custom_payload_in_statement() throws Exception {
+        SimpleStatement statement = new SimpleStatement("SELECT c2 FROM t1 where c1 = ?", 1);
+        statement.setCustomPayload(customPayload);
+        ResultSet rows = session.execute(statement);
+        CustomPayload actual = rows.getExecutionInfo().getCustomPayload();
+        assertCustomPayload(actual);
+    }
+
+    // payload set at session level
 
     // execute
 
@@ -105,20 +118,20 @@ public class CustomPayloadTest extends CCMBridge.PerClassSingleNodeCluster {
     public void should_echo_custom_payload_when_preparing_statement() throws Exception {
         PreparedStatement ps = session.prepareWithPayload(new SimpleStatement("SELECT c2 FROM t1 where c1 = ?"), customPayload);
         assertCustomPayload(((CustomPayloadAwarePreparedStatement)ps).getCustomPayload());
-        ResultSet rows = session.execute(ps.bind(1));
-        assertCustomPayload(rows.getExecutionInfo().getCustomPayload());
     }
 
     @Test(groups = "short")
     public void should_echo_custom_payload_when_preparing_statement_async() throws Exception {
         PreparedStatement ps = session.prepareAsyncWithPayload(new SimpleStatement("SELECT c2 FROM t1 where c1 = ?"), customPayload).get();
         assertCustomPayload(((CustomPayloadAwarePreparedStatement)ps).getCustomPayload());
-        ResultSet rows = session.execute(ps.bind(1));
-        assertCustomPayload(rows.getExecutionInfo().getCustomPayload());
     }
 
     // pagination
 
+    /**
+     * Ensures that a custom payload is propagated throughout pages.
+     * @throws Exception
+     */
     @Test(groups = "short")
     public void should_echo_custom_payload_when_paginating() throws Exception {
         session.execute("INSERT INTO t1 (c1) VALUES (1)");
@@ -133,16 +146,7 @@ public class CustomPayloadTest extends CCMBridge.PerClassSingleNodeCluster {
         }
     }
 
-    // statement override - merge
-
-    @Test(groups = "short")
-    public void should_echo_custom_payload_in_statement() throws Exception {
-        SimpleStatement statement = new SimpleStatement("SELECT c2 FROM t1 where c1 = ?", 1);
-        statement.setCustomPayload(customPayload);
-        ResultSet rows = session.execute(statement);
-        CustomPayload actual = rows.getExecutionInfo().getCustomPayload();
-        assertCustomPayload(actual);
-    }
+    // payload merge
 
     @Test(groups = "short")
     public void should_echo_custom_payload_merged() throws Exception {

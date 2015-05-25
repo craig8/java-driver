@@ -614,7 +614,10 @@ class RequestHandler {
 
                 @Override
                 public Message.Request request() {
-                    return new Requests.Prepare(toPrepare);
+                    Requests.Prepare request = new Requests.Prepare(toPrepare);
+                    // propagate the original custom payload in the prepare request
+                    request.setCustomPayload(statement.getCustomPayload());
+                    return request;
                 }
 
                 @Override

@@ -18,7 +18,6 @@ package com.datastax.driver.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 
 /**
